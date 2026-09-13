@@ -6,7 +6,7 @@
 
 The system captures hand movements through a webcam, detects **21 hand landmarks**, and interprets them using two complementary approaches:
 
-* **Rule-Based Gestures** – used for continuous and precise actions such as cursor movement, clicking, dragging, and scrolling.
+* **Rule-Based Gestures** – used for continuous and precise actions such as cursor movement, clicking, select and drag.
 * **Static ML Gestures** – used for intentional commands such as copy, paste, cut, delete, mute, and application-specific controls.
 
 The application also provides different **control modes**, allowing the same gesture to perform different actions depending on the active application or mode.
@@ -26,9 +26,8 @@ They are mainly used for actions that require continuous interaction.
 * Move the cursor using the index and middle fingers.
 * **Index finger + thumb** → Left click.
 * **Middle finger + thumb** → Right click.
-* Finger combinations → Double click.
-* Hold and move → Drag and drop.
-* Index finger movement with the required finger configuration → Scroll.
+* **Double Tap(Index finger + thumb)** → Double click.
+* **Hold(Index finger + thumb) & Drag** → select and drag.
 
 The rule-based controller has priority during normal interaction because these actions need to respond continuously and quickly.
 
@@ -42,13 +41,13 @@ A gesture is first held in a stable position. After the required stability condi
 
 Examples of static gestures include:
 
-| Static Gesture | Example Action           |
-| -------------- | ------------------------ |
-| 👍 Thumbs Up   | Copy                     |
-| 👎 Thumbs Down | Paste                    |
-| V Sign         | Cut                      |
-| ✊ Fist         | Delete with confirmation |
-| Wrapped Thumb  | Mute                     |
+| Static Gesture    | Example Action           |
+| --------------    | ------------------------ |
+| 👍 Thumbs Up      | Copy                     |
+| 👎 Thumbs Down    | Paste                    |
+| ✌ V Sign         | Cut                      |
+| 👊 Fist           | Delete with confirmation |
+| ✊ Wrapped Thumb  | Mute                     |
 
 The system uses confidence and stability checks to reduce accidental commands.
 
@@ -68,9 +67,9 @@ For example:
 
 * 👍 Thumbs Up → Copy
 * 👎 Thumbs Down → Paste
-* V Sign → Cut
-* ✊ Fist → Delete
-* Wrapped Thumb → Mute
+* ✌ V Sign → Cut
+* 👊 Fist → Delete
+* ✊ Wrapped Thumb → Mute
 
 These commands provide a common set of controls across applications.
 
@@ -82,13 +81,13 @@ Browser Mode provides gestures specifically for web browsers.
 
 For example:
 
-* **Thumbs Up** → Copy
-* **Thumbs Down** → Paste
-* **V Sign** → Cut
-* **Next gesture** → Next browser tab
-* **Previous gesture** → Previous browser tab
-* **New-tab gesture** → Open a new tab
-* **Close-tab gesture** → Close the current tab
+* **👍 Thumbs Up** → Copy
+* **👎 Thumbs Down** → Paste
+* **✌️ V Sign** → Cut
+* **👉 Next gesture** → Next browser tab
+* **👈 Previous gesture** → Previous browser tab
+* **👌 New-tab gesture** → Open a new tab
+* **✋ Close-tab gesture** → Close the current tab
 
 The system also checks the active browser window before performing certain application-specific actions.
 
@@ -102,8 +101,8 @@ PowerPoint Mode maps gestures to presentation controls.
 
 For example:
 
-* **Next gesture** → Next slide
-* **Previous gesture** → Previous slide
+* **👉 Next gesture** → Next slide
+* **👈 Previous gesture** → Previous slide
 
 This allows presentations to be controlled without physically using the keyboard or mouse.
 
@@ -132,14 +131,14 @@ The gesture recognition layer identifies the gesture first, while the active mod
 
 For example:
 
-| Gesture        | Global Mode | Browser Mode              | PowerPoint Mode |
-| -------------- | ----------- | ------------------------- | --------------- |
-| 👍 Thumbs Up   | Copy        | Copy                      | Copy            |
-| 👎 Thumbs Down | Paste       | Paste                     | Paste           |
-| V Sign         | Cut         | Cut / YouTube Play-Pause* | Cut             |
-| Next           | —           | Next Tab                  | Next Slide      |
-| Previous       | —           | Previous Tab              | Previous Slide  |
-| Fist           | Delete      | Delete                    | Delete          |
+| Gesture           | Global Mode | Browser Mode              | PowerPoint Mode |
+| --------------    | ----------- | ------------------------- | --------------- |
+| 👍 Thumbs Up      | Copy        | Copy                      | Copy            |
+| 👎 Thumbs Down    | Paste       | Paste                     | Paste           |
+| ✌️ V Sign         | Cut         | Cut / YouTube Play-Pause* | Cut             |
+| 👉 Next           | —           | Next Tab                  | Next Slide      |
+| 👈 Previous       | —           | Previous Tab              | Previous Slide  |
+| 👊 Fist           | Delete      | Delete                    | Delete          |
 
 *The YouTube action is performed only when the active browser/page satisfies the application's browser-specific condition.
 
