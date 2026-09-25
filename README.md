@@ -1,234 +1,767 @@
-# Gesture Based System Control
+# 🖐️ Gesture Based System Control
 
-## Overview
+> A real-time, webcam-based computer control system that transforms hand gestures into mouse, keyboard, browser, and presentation actions.
 
-**Gesture Based System Control** is a webcam-based application that allows users to control computer operations using **hand gestures** instead of traditional input devices such as a mouse and keyboard.
-
-The system captures hand movements through a webcam, detects **21 hand landmarks**, and interprets them using two complementary approaches:
-
-* **Rule-Based Gestures** – used for continuous and precise actions such as cursor movement, clicking, select and drag.
-* **Static ML Gestures** – used for intentional commands such as copy, paste, cut, delete, mute, and application-specific controls.
-
-The application also provides different **control modes**, allowing the same gesture to perform different actions depending on the active application or mode.
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/)
+[![OpenCV](https://img.shields.io/badge/OpenCV-Real--Time%20Vision-green?logo=opencv)](https://opencv.org/)
+[![MediaPipe](https://img.shields.io/badge/MediaPipe-Hand%20Tracking-orange)](https://ai.google.dev/edge/mediapipe/solutions/guide)
+[![Scikit-learn](https://img.shields.io/badge/Scikit--learn-Machine%20Learning-F7931E?logo=scikit-learn)](https://scikit-learn.org/)
+[![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey?logo=windows)](https://www.microsoft.com/windows)
 
 ---
 
-## Key Functionalities
+## 📑 Table of Contents
 
-### 1. Rule-Based Hand Control
+* [Overview](#-overview)
+* [Key Features](#-key-features)
+* [How It Works](#-how-it-works)
+* [Gesture Controls](#-gesture-controls)
 
-Rule-based gestures are detected using the relative positions and distances between hand landmarks.
+  * [Continuous Controls](#continuous-controls)
+  * [Static Gesture Commands](#static-gesture-commands)
+* [Application Modes](#-application-modes)
 
-They are mainly used for actions that require continuous interaction.
-
-**Examples:**
-
-* Move the cursor using the index and middle fingers.
-* **Index finger + thumb** → Left click.
-* **Middle finger + thumb** → Right click.
-* **Double Tap(Index finger + thumb)** → Double click.
-* **Hold(Index finger + thumb) & Drag** → select and drag.
-
-The rule-based controller has priority during normal interaction because these actions need to respond continuously and quickly.
-
----
-
-### 2. Static Gesture Recognition
-
-Static gestures are recognized using a trained **machine learning model**.
-
-A gesture is first held in a stable position. After the required stability condition is satisfied, the ML model predicts the gesture and triggers the corresponding command.
-
-Examples of static gestures include:
-
-| Static Gesture    | Example Action           |
-| --------------    | ------------------------ |
-| 👍 Thumbs Up      | Copy                     |
-| 👎 Thumbs Down    | Paste                    |
-| ✌ V Sign         | Cut                      |
-| 👊 Fist           | Delete with confirmation |
-| ✊ Wrapped Thumb  | Mute                     |
-
-The system uses confidence and stability checks to reduce accidental commands.
-
-After a static command is executed, the gesture must be released before another prediction can be triggered. This **release-to-rearm mechanism** prevents the same gesture from repeatedly executing an action while it is being held.
+  * [Global Mode](#global-mode)
+  * [Browser Mode](#browser-mode)
+  * [Presentation Mode](#presentation-mode)
+* [Gesture-to-Action Mapping](#-gesture-to-action-mapping)
+* [System Architecture](#-system-architecture)
+* [Why Rule-Based + Machine Learning?](#-why-rule-based--machine-learning)
+* [Technology Stack](#-technology-stack)
+* [Project Structure](#-project-structure)
+* [Requirements](#-requirements)
+* [Installation & Setup](#-installation--setup)
+* [Quick Start](#-quick-start)
+* [Using the Application](#-using-the-application)
+* [Safety & Reliability Mechanisms](#-safety--reliability-mechanisms)
+* [Design Principle](#-design-principle)
+* [Limitations](#-limitations)
+* [Future Scope](#-future-scope)
+* [Contributing](#-contributing)
+* [License](#-license)
 
 ---
 
-## Control Modes
+# 🧠 Overview
 
-The application supports multiple modes. A mode determines how recognized gestures are interpreted.
+**Gesture Based System Control** is a computer-vision application that enables users to interact with a Windows computer using hand gestures captured through a webcam.
 
-### Global Mode
+Instead of relying entirely on a physical mouse and keyboard, the system detects the user's hand, extracts its **21 landmark points**, interprets the hand configuration, and converts recognized gestures into computer actions.
 
-Global Mode provides basic system-wide controls that can be used regardless of the active application.
+The application combines two complementary recognition techniques:
+
+* **Rule-based recognition** for continuous interactions such as cursor movement, clicking, dragging, and scrolling.
+* **Machine-learning-based recognition** for intentional static gestures such as copy, paste, cut, delete, mute, and application-specific commands.
+
+The system also uses **application-aware control modes**, allowing the same gesture to perform different actions depending on the currently active application.
+
+### Core Concept
+
+```text
+Hand Gesture + Application Context → Computer Action
+```
+
+The project follows a simple philosophy:
+
+> **Fewer gestures, more actions.**
+
+---
+
+# ✨ Key Features
+
+### 🖐️ Real-Time Hand Tracking
+
+* Captures hand input directly through a webcam.
+* Detects and tracks **21 hand landmarks** using MediaPipe.
+* Processes gestures in real time.
+
+### 🖱️ Touchless Mouse Control
+
+* Move the cursor using hand movement.
+* Perform left-click and right-click operations.
+* Perform double-click actions.
+* Select and drag objects using gestures.
+* Scroll through content using hand gestures.
+
+### 🤖 Static Gesture Recognition
+
+* Uses a trained **Random Forest classifier** for static gesture recognition.
+* Requires gestures to remain stable before triggering commands.
+* Uses prediction confidence to improve reliability.
+
+### 🧩 Application-Aware Controls
+
+The application detects the active window and automatically switches its interaction mode.
+
+Supported contexts include:
+
+* **Global Mode**
+* **Browser Mode**
+* **Presentation Mode**
+
+### 🔄 Release-to-Rearm
+
+After a static gesture executes an action, the system waits for the gesture to be released before allowing the same command to execute again.
+
+This prevents repeated actions while a gesture is being held.
+
+### 🎯 Context-Specific Actions
+
+The same gesture can have different meanings depending on the active application.
 
 For example:
 
-* 👍 Thumbs Up → Copy
-* 👎 Thumbs Down → Paste
-* ✌ V Sign → Cut
-* 👊 Fist → Delete
-* ✊ Wrapped Thumb → Mute
-
-These commands provide a common set of controls across applications.
-
----
-
-### Browser Mode
-
-Browser Mode provides gestures specifically for web browsers.
-
-For example:
-
-* **👍 Thumbs Up** → Copy
-* **👎 Thumbs Down** → Paste
-* **✌️ V Sign** → Cut
-* **👉 Next gesture** → Next browser tab
-* **👈 Previous gesture** → Previous browser tab
-* **👌 New-tab gesture** → Open a new tab
-* **✋ Close-tab gesture** → Close the current tab
-
-The system also checks the active browser window before performing certain application-specific actions.
-
-For example, the **V Sign** can be interpreted as a YouTube play/pause command when a supported browser is active and the current page is YouTube.
+```text
+Next Gesture
+      ↓
+Browser      → Next Tab
+PowerPoint   → Next Slide
+```
 
 ---
 
-### PowerPoint Mode
+# ⚙️ How It Works
 
-PowerPoint Mode maps gestures to presentation controls.
-
-For example:
-
-* **👉 Next gesture** → Next slide
-* **👈 Previous gesture** → Previous slide
-* **👌 Ok gesture** → Open slideshow
-* **✋ Close gesture** → Close slideshow
-
-This allows presentations to be controlled without physically using the keyboard or mouse.
-
----
-
-### System Control Mode
-
-System Control Mode focuses on general computer operations such as:
-
-* Copy
-* Paste
-* Cut
-* Delete
-* Mute
-* Mouse interaction
-
-The same physical gesture can therefore have a different meaning depending on the selected mode.
-
----
-
-## How Gesture Actions Change Between Modes
-
-The important feature of the application is that **a gesture does not always represent one fixed command**.
-
-The gesture recognition layer identifies the gesture first, while the active mode determines what action should be performed.
-
-For example:
-
-| Gesture           | Global Mode | Browser Mode              | PowerPoint Mode |
-| --------------    | ----------- | ------------------------- | --------------- |
-| 👍 Thumbs Up      | Copy        | Copy                      | Copy            |
-| 👎 Thumbs Down    | Paste       | Paste                     | Paste           |
-| ✌️ V Sign         | Cut         | Cut / YouTube Play-Pause* | Cut             |
-| 👉 Next           | —           | Next Tab                  | Next Slide      |
-| 👈 Previous       | —           | Previous Tab              | Previous Slide  |
-| 👌 Ok sign        | —           | open a new Tab            | open slideshow  |
-| ✋ open palm      | —           | closes Tab                | close slideshow |
-
-*The YouTube action is performed only when the active browser/page satisfies the application's browser-specific condition.
-
-This separation between **gesture recognition** and **action mapping** makes the system flexible and allows new modes or actions to be added without changing the basic hand-detection system.
-
----
-
-## Application Workflow
-
-The application follows a simple processing pipeline:
-
-**Webcam → Hand Detection → Landmark Extraction → Gesture Recognition → Mode Selection → Action Execution**
-
-1. The webcam continuously captures frames.
-2. **MediaPipe Hands** detects the hand and extracts its 21 landmarks.
-3. Landmark positions are processed into useful geometric features.
-4. The rule-based controller checks gestures required for continuous interaction.
-5. Stable static gestures are passed to the ML prediction system.
-6. The active mode determines the meaning of the recognized gesture.
-7. The corresponding computer action is executed using automation libraries.
-8. The interface displays information such as FPS, current gesture, stable gesture, confidence, mode, and action status.
-
----
-
-## Technology Stack
-
-| Technology                     | Purpose                                                      |
-| ------------------------------ | ------------------------------------------------------------ |
-| **Python**                     | Core application and control logic                           |
-| **OpenCV**                     | Webcam access and real-time frame processing                 |
-| **MediaPipe Hands**            | Hand detection and 21-landmark tracking                      |
-| **NumPy**                      | Landmark processing and numerical calculations               |
-| **Scikit-learn**               | Training and prediction of static hand gestures              |
-| **PyAutoGUI**                  | Mouse, keyboard, and system-level automation                 |
-| **PyGetWindow / Pywinauto**    | Detecting and interacting with the active application window |
-| **SVM Machine Learning Model** | Static gesture classification                                |
-
----
-
-## System Architecture
-
-The application is organized into separate components so that detection, recognition, and action execution remain independent.
+The application processes the user's hand input through the following pipeline:
 
 ```text
 Webcam
    ↓
-OpenCV
+OpenCV Frame Capture
    ↓
-MediaPipe Hands
+MediaPipe Hand Tracking
    ↓
 21 Hand Landmarks
    ↓
 Feature Processing
    ↓
- ┌───────────────────────┐
- │                       │
-Rule-Based Controller   ML Predictor
- │                       │
- │                 Stable Static Gesture
- │                       │
- └───────────┬───────────┘
-             ↓
-        Active Mode
-             ↓
-      Action Mapping
-             ↓
-   PyAutoGUI / Window Control
-             ↓
-      Computer Action
+┌──────────────────────────────┐
+│                              │
+│  Rule-Based Controller       │
+│          +                   │
+│  Static ML Predictor         │
+│                              │
+└──────────────┬───────────────┘
+               ↓
+        Active Application
+               ↓
+          Control Mode
+               ↓
+         Action Mapping
+               ↓
+     PyAutoGUI / Window Control
+               ↓
+        Computer Action
 ```
 
-### Why Two Recognition Approaches?
+### Processing Flow
 
-The project uses both rule-based and ML-based recognition because different interactions have different requirements.
-
-* **Rule-based recognition** is suitable for fast, continuous actions such as cursor movement, clicking, dragging, and scrolling.
-* **ML-based recognition** is suitable for recognizing predefined static hand poses and converting them into intentional commands.
-* Combining both approaches provides better control while avoiding the need to use a large number of gestures for basic mouse operations.
+1. The webcam continuously captures video frames.
+2. OpenCV processes the incoming frames.
+3. MediaPipe detects the user's hand.
+4. The 21 hand landmarks are extracted.
+5. Landmark coordinates are converted into useful geometric features.
+6. The rule-based controller handles continuous interactions.
+7. Stable static gestures are passed to the ML classifier.
+8. The active application determines the current control mode.
+9. The recognized gesture is mapped to the appropriate action.
+10. PyAutoGUI and Windows automation libraries execute the action.
 
 ---
 
-## Design Principle
+# 🖐️ Gesture Controls
 
-The project follows the principle of **"fewer gestures, more actions."**
+The application divides gesture interaction into two categories.
 
-Instead of requiring a separate gesture for every computer operation, the system uses:
+## Continuous Controls
 
-**Gesture + Mode + Active Application → Action**
+Continuous interactions are handled using predefined geometric relationships between hand landmarks.
 
-This allows a relatively small set of recognizable hand gestures to control a wider range of computer operations.
+| Gesture                | Action             |
+| ---------------------- | ------------------ |
+| Index + Middle Finger  | Cursor movement    |
+| Index + Thumb          | Left Click         |
+| Middle + Thumb         | Right Click        |
+| Repeated Index + Thumb | Double Click       |
+| Hold Index + Thumb     | Drag / Select      |
+| Scroll Gesture         | Vertical Scrolling |
+
+These controls are handled primarily through rules because continuous actions require fast and predictable responses.
+
+---
+
+## Static Gesture Commands
+
+Static gestures are recognized by the trained machine-learning model after the gesture remains stable for the required number of frames.
+
+| Gesture         | Command                  |
+| --------------- | ------------------------ |
+| 👍 Thumbs Up    | Copy                     |
+| 👎 Thumbs Down  | Paste                    |
+| ✌️ V Sign       | Cut                      |
+| 👊 Fist         | Delete with Confirmation |
+| ✊ Wrapped Thumb | Mute                     |
+
+The exact interpretation of some gestures can change according to the active application mode.
+
+---
+
+# 🎛️ Application Modes
+
+The system automatically determines the control mode based on the currently active application.
+
+---
+
+## Global Mode
+
+Global Mode provides general-purpose computer controls.
+
+| Gesture         | Action |
+| --------------- | ------ |
+| 👍 Thumbs Up    | Copy   |
+| 👎 Thumbs Down  | Paste  |
+| ✌️ V Sign       | Cut    |
+| 👊 Fist         | Delete |
+| ✊ Wrapped Thumb | Mute   |
+
+These commands are intended to work across normal desktop applications.
+
+---
+
+## Browser Mode
+
+When a supported browser is active, the system switches to **Browser Mode**.
+
+Supported browsers include:
+
+* Google Chrome
+* Microsoft Edge
+* Mozilla Firefox
+* Brave
+
+Browser-specific commands include:
+
+| Gesture   | Action                    |
+| --------- | ------------------------- |
+| Next      | Next Tab                  |
+| Previous  | Previous Tab              |
+| OK Sign   | Open New Tab              |
+| Open Palm | Close Current Tab         |
+| V Sign    | Cut / YouTube Play-Pause* |
+
+* The YouTube-specific action is triggered only when the active browser satisfies the application's YouTube detection condition.
+
+---
+
+## Presentation Mode
+
+When Microsoft PowerPoint is the active application, the system switches to **Presentation Mode**.
+
+| Gesture   | Action          |
+| --------- | --------------- |
+| Next      | Next Slide      |
+| Previous  | Previous Slide  |
+| OK Sign   | Start Slideshow |
+| Open Palm | End Slideshow   |
+
+This allows basic presentation navigation without directly interacting with the keyboard or mouse.
+
+---
+
+# 🔄 Gesture-to-Action Mapping
+
+The important design feature is that a recognized gesture is **not necessarily tied to one fixed action**.
+
+The system separates:
+
+```text
+Gesture Recognition
+        ↓
+Application / Mode Detection
+        ↓
+Action Mapping
+        ↓
+Computer Operation
+```
+
+For example:
+
+| Gesture        | Global | Browser                   | Presentation    |
+| -------------- | ------ | ------------------------- | --------------- |
+| 👍 Thumbs Up   | Copy   | Copy                      | Copy            |
+| 👎 Thumbs Down | Paste  | Paste                     | Paste           |
+| ✌️ V Sign      | Cut    | Cut / YouTube Play-Pause* | Cut             |
+| Next           | —      | Next Tab                  | Next Slide      |
+| Previous       | —      | Previous Tab              | Previous Slide  |
+| 👌 OK Sign     | —      | New Tab                   | Start Slideshow |
+| ✋ Open Palm    | —      | Close Tab                 | End Slideshow   |
+
+This separation makes the application easier to extend because new actions or application modes can be added without redesigning the underlying hand-detection pipeline.
+
+---
+
+# 🏗️ System Architecture
+
+```text
+                       ┌──────────────┐
+                       │    Webcam    │
+                       └──────┬───────┘
+                              ↓
+                       ┌──────────────┐
+                       │    OpenCV    │
+                       └──────┬───────┘
+                              ↓
+                    ┌────────────────────┐
+                    │  MediaPipe Hands   │
+                    │  21 Landmarks      │
+                    └─────────┬──────────┘
+                              ↓
+                    ┌────────────────────┐
+                    │ Feature Processing │
+                    └─────────┬──────────┘
+                              ↓
+              ┌───────────────┴───────────────┐
+              ↓                               ↓
+    ┌────────────────────┐          ┌──────────────────┐
+    │ Rule-Based         │          │ ML Predictor     │
+    │ Controller         │          │ Random Forest    │
+    └─────────┬──────────┘          └────────┬─────────┘
+              │                              │
+              └──────────────┬───────────────┘
+                             ↓
+                   ┌───────────────────┐
+                   │ Active Application│
+                   │ / Control Mode    │
+                   └─────────┬─────────┘
+                             ↓
+                   ┌───────────────────┐
+                   │   Action Mapping  │
+                   └─────────┬─────────┘
+                             ↓
+              ┌────────────────────────────┐
+              │ PyAutoGUI / Window Control│
+              └──────────────┬─────────────┘
+                             ↓
+                    ┌────────────────┐
+                    │ Computer Action │
+                    └────────────────┘
+```
+
+---
+
+# 🧩 Why Rule-Based + Machine Learning?
+
+The project intentionally combines both approaches because continuous and static interactions have different requirements.
+
+### Rule-Based Recognition
+
+Best suited for:
+
+* Cursor movement
+* Clicking
+* Dragging
+* Scrolling
+* Other continuous interactions
+
+Rules provide fast and predictable responses for these operations.
+
+### Machine Learning Recognition
+
+Best suited for:
+
+* Static hand poses
+* Intentional commands
+* Application-specific commands
+* Commands that should trigger only after a gesture is held steadily
+
+The combination provides a wider range of controls without requiring a separate gesture for every computer operation.
+
+---
+
+# 🛠️ Technology Stack
+
+| Technology          | Role                                          |
+| ------------------- | --------------------------------------------- |
+| **Python**          | Core application and control logic            |
+| **OpenCV**          | Webcam capture and real-time image processing |
+| **MediaPipe Hands** | Hand detection and 21-landmark tracking       |
+| **NumPy**           | Numerical calculations and feature processing |
+| **Pandas**          | Dataset handling and preprocessing            |
+| **Scikit-learn**    | Random Forest model training and prediction   |
+| **Joblib**          | Saving and loading the trained ML model       |
+| **PyAutoGUI**       | Mouse, keyboard, and system automation        |
+| **PyGetWindow**     | Active-window detection                       |
+| **Pywinauto**       | Windows application interaction               |
+
+---
+
+# 📁 Project Structure
+
+```text
+gesture_command/
+│
+├── data/
+│   └── gestures_dataset.csv
+│
+├── models/
+│   ├── gesture_model_final_1.pkl
+│   └── hand_landmarker.task
+│
+├── src/
+│   ├── controls/
+│   │   ├── gesture_actions.py
+│   │   └── rule_controller.py
+│   │
+│   ├── ml/
+│   │   └── live_predictor.py
+│   │
+│   ├── preprocessing/
+│   │   └── feature_utils.py
+│   │
+│   ├── utils/
+│   │   └── drawing_utils.py
+│   │
+│   └── main.py
+│
+├── collection_script.py
+├── train_model.py
+├── requirements.txt
+├── .gitignore
+└── README.md
+```
+
+### Important Components
+
+**`src/main.py`**
+Main entry point of the application.
+
+**`src/controls/rule_controller.py`**
+Handles real-time rule-based gestures and continuous mouse interactions.
+
+**`src/controls/gesture_actions.py`**
+Contains gesture-to-action mappings and computer-control operations.
+
+**`src/ml/live_predictor.py`**
+Loads the trained model and performs live static gesture prediction.
+
+**`src/preprocessing/feature_utils.py`**
+Processes landmark data into model-compatible features.
+
+**`src/utils/drawing_utils.py`**
+Handles visual overlays and hand-tracking display utilities.
+
+**`train_model.py`**
+Trains the static gesture classification model.
+
+**`collection_script.py`**
+Used to collect gesture samples for dataset creation.
+
+---
+
+# 💻 Requirements
+
+Before installing the project, make sure the system has:
+
+* Windows 10 or Windows 11
+* Python 3.10 or later
+* Git
+* A working webcam
+* Internet connection for installing Python dependencies
+
+Check the installed versions:
+
+```powershell
+python --version
+git --version
+```
+
+---
+
+# 🚀 Installation & Setup
+
+## 1. Clone the Repository
+
+Clone the project repository and enter the project directory:
+
+```powershell
+git clone <REPOSITORY_URL>
+cd gesture_command
+```
+
+---
+
+## 2. Create a Virtual Environment
+
+Creating a virtual environment keeps project dependencies isolated from other Python projects.
+
+```powershell
+python -m venv .venv
+```
+
+---
+
+## 3. Activate the Virtual Environment
+
+For PowerShell:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+If PowerShell blocks script execution, run:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
+
+Then activate the environment again:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+You should now see:
+
+```text
+(.venv)
+```
+
+at the beginning of the terminal prompt.
+
+---
+
+## 4. Install Dependencies
+
+Upgrade pip:
+
+```powershell
+python -m pip install --upgrade pip
+```
+
+Install the project dependencies:
+
+```powershell
+pip install -r requirements.txt
+```
+
+---
+
+# ⚡ Quick Start
+
+Once the dependencies are installed, the application can be started directly.
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+python src\main.py
+```
+
+The application will:
+
+```text
+Start Webcam
+      ↓
+Detect Hand
+      ↓
+Track 21 Landmarks
+      ↓
+Recognize Gestures
+      ↓
+Detect Active Application
+      ↓
+Execute Corresponding Action
+```
+
+The trained gesture model and MediaPipe hand-landmarker file are already included in the repository, so **model training is not required for normal usage**.
+
+---
+
+# 🎮 Using the Application
+
+After starting the application:
+
+### 1. Allow Webcam Access
+
+Make sure the application has permission to access your webcam.
+
+### 2. Position Your Hand
+
+Keep your hand clearly visible within the camera frame.
+
+### 3. Use Continuous Gestures
+
+Use the rule-based gestures for:
+
+* Cursor movement
+* Left click
+* Right click
+* Double click
+* Dragging
+* Scrolling
+
+### 4. Hold Static Gestures
+
+For ML-based commands, hold the desired gesture steadily until the application recognizes it.
+
+### 5. Release Before Repeating
+
+After a static command executes, release the gesture before performing the same command again.
+
+### 6. Switch Applications
+
+The system detects the active application and automatically changes the applicable control mode.
+
+For example:
+
+```text
+Normal Desktop
+      ↓
+Global Mode
+
+Chrome / Edge / Firefox / Brave
+      ↓
+Browser Mode
+
+Microsoft PowerPoint
+      ↓
+Presentation Mode
+```
+
+---
+
+# 🛡️ Safety & Reliability Mechanisms
+
+Because computer-control applications can accidentally trigger unwanted actions, the system includes several mechanisms to improve reliability.
+
+### Gesture Stability
+
+Static gestures must remain stable for a specified number of frames before they are considered valid.
+
+### Confidence Filtering
+
+The ML prediction is evaluated using its confidence before an action is executed.
+
+### Release-to-Rearm
+
+A recognized static gesture cannot repeatedly trigger the same action while continuously held.
+
+```text
+Gesture Detected
+      ↓
+Stable?
+   No → Continue Tracking
+   Yes
+      ↓
+ML Prediction
+      ↓
+Confidence Check
+      ↓
+Execute Action
+      ↓
+Wait for Release
+      ↓
+Ready for Next Command
+```
+
+### Context-Aware Actions
+
+Application-specific commands are executed only when the appropriate active application is detected.
+
+---
+
+# 🎯 Design Principle
+
+The central design principle of the project is:
+
+> **Fewer gestures, more actions.**
+
+Instead of creating a unique gesture for every computer operation, the system combines three pieces of information:
+
+```text
+Gesture
+   +
+Control Mode
+   +
+Active Application
+   ↓
+Action
+```
+
+This allows a relatively small gesture vocabulary to control a wider range of operations.
+
+For example:
+
+```text
+Next Gesture
+
+Browser Mode
+      ↓
+Next Browser Tab
+
+Presentation Mode
+      ↓
+Next PowerPoint Slide
+```
+
+The gesture itself remains the same while its meaning changes according to context.
+
+---
+
+# ⚠️ Limitations
+
+The current implementation has some practical limitations:
+
+* Performance depends on webcam quality and lighting conditions.
+* Hand occlusion can reduce landmark detection accuracy.
+* Gesture recognition can be affected by camera position and hand orientation.
+* The application is primarily designed for Windows.
+* Application-specific behavior depends on the active window being correctly identified.
+* The ML classifier recognizes only the gesture classes included in its training dataset.
+* Certain actions may require the target application to be in an appropriate state.
+
+---
+
+# 🔮 Future Scope
+
+Potential areas for further development include:
+
+* Improved gesture recognition robustness.
+* Additional application-specific control modes.
+* Expanded gesture datasets.
+* Support for more desktop applications.
+* Better handling of difficult lighting and hand orientations.
+* More customizable gesture-to-action mappings.
+* Cross-platform support.
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome.
+
+A typical contribution workflow is:
+
+```text
+Fork the Repository
+       ↓
+Create a Feature Branch
+       ↓
+Implement Changes
+       ↓
+Test the Application
+       ↓
+Commit Changes
+       ↓
+Open a Pull Request
+```
+
+When contributing, please keep the project structure modular and test gesture changes carefully because they can affect system-level actions.
+
+---
+
+# 📄 License
+
+This project is intended for educational and development purposes.
+
+Add an appropriate open-source license to this repository if you plan to distribute or accept external contributions.
+
+
