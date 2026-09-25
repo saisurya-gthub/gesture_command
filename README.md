@@ -6,39 +6,36 @@
 [![OpenCV](https://img.shields.io/badge/OpenCV-Real--Time%20Vision-green?logo=opencv)](https://opencv.org/)
 [![MediaPipe](https://img.shields.io/badge/MediaPipe-Hand%20Tracking-orange)](https://ai.google.dev/edge/mediapipe/solutions/guide)
 [![Scikit-learn](https://img.shields.io/badge/Scikit--learn-Machine%20Learning-F7931E?logo=scikit-learn)](https://scikit-learn.org/)
-[![Platform](https://img.shields.io/badge/Platform-Windows-lightgrey?logo=windows)](https://www.microsoft.com/windows)
 
 ---
 
 ## 📑 Table of Contents
 
-* [Overview](#-overview)
-* [Key Features](#-key-features)
-* [How It Works](#-how-it-works)
-* [Gesture Controls](#-gesture-controls)
-
-  * [Continuous Controls](#continuous-controls)
-  * [Static Gesture Commands](#static-gesture-commands)
-* [Application Modes](#-application-modes)
-
-  * [Global Mode](#global-mode)
-  * [Browser Mode](#browser-mode)
-  * [Presentation Mode](#presentation-mode)
-* [Gesture-to-Action Mapping](#-gesture-to-action-mapping)
-* [System Architecture](#-system-architecture)
-* [Why Rule-Based + Machine Learning?](#-why-rule-based--machine-learning)
-* [Technology Stack](#-technology-stack)
-* [Project Structure](#-project-structure)
-* [Requirements](#-requirements)
-* [Installation & Setup](#-installation--setup)
-* [Quick Start](#-quick-start)
-* [Using the Application](#-using-the-application)
-* [Safety & Reliability Mechanisms](#-safety--reliability-mechanisms)
-* [Design Principle](#-design-principle)
-* [Limitations](#-limitations)
-* [Future Scope](#-future-scope)
-* [Contributing](#-contributing)
-* [License](#-license)
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [How It Works](#how-it-works)
+- [Gesture Controls](#gesture-controls)
+  - [Continuous Controls](#continuous-controls)
+  - [Static Gesture Commands](#static-gesture-commands)
+- [Application Modes](#application-modes)
+  - [Global Mode](#global-mode)
+  - [Browser Mode](#browser-mode)
+  - [Presentation Mode](#presentation-mode)
+- [Gesture-to-Action Mapping](#gesture-to-action-mapping)
+- [System Architecture](#system-architecture)
+- [Why Rule-Based + Machine Learning?](#why-rule-based--machine-learning)
+- [Technology Stack](#technology-stack)
+- [Project Structure](#project-structure)
+- [Requirements](#requirements)
+- [Installation & Setup](#installation--setup)
+- [Quick Start](#quick-start)
+- [Using the Application](#using-the-application)
+- [Safety & Reliability Mechanisms](#safety--reliability-mechanisms)
+- [Design Principle](#design-principle)
+- [Limitations](#limitations)
+- [Future Scope](#future-scope)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
@@ -117,6 +114,133 @@ Next Gesture
 Browser      → Next Tab
 PowerPoint   → Next Slide
 ```
+
+---
+
+# 🎯 Gesture Reference
+
+The application uses a compact set of hand gestures to control different computer operations.
+
+A gesture can have a **different meaning depending on the active application**. The following reference shows the gestures supported by the system and the actions associated with them.
+
+## Gesture-to-Action Matrix
+
+| Gesture           | Visual                                                    | Global Mode | Browser Mode                  | Presentation Mode   |
+| ----------------- | --------------------------------------------------------- | ----------- | ----------------------------- | ------------------- |
+| **Next**          | <img src="assets/gestures/next.png" width="110">          | —           | **Next Tab**                  | **Next Slide**      |
+| **Previous**      | <img src="assets/gestures/previous.png" width="110">      | —           | **Previous Tab**              | **Previous Slide**  |
+| **Thumbs Up**     | <img src="assets/gestures/thumbs_up.png" width="110">     | **Copy**    | **Copy**                      | **Copy**            |
+| **Thumbs Down**   | <img src="assets/gestures/thumbs_down.png" width="110">   | **Paste**   | **Paste**                     | **Paste**           |
+| **Open Palm**     | <img src="assets/gestures/open_palm.png" width="110">     | —           | **Close Tab**                 | **End Slideshow**   |
+| **Wrapped Thumb** | <img src="assets/gestures/wrapped_thumb.png" width="110"> | **Mute**    | **Mute**                      | **Mute**            |
+| **OK Sign**       | <img src="assets/gestures/ok_sign.png" width="110">       | —           | **Open New Tab**              | **Start Slideshow** |
+| **V Sign**        | <img src="assets/gestures/v_sign.png" width="110">        | **Cut**     | **Cut / YouTube Play-Pause*** | **Cut**             |
+| **Fist**          | <img src="assets/gestures/fist.png" width="110">          | **Delete**  | **Delete**                    | **Delete**          |
+
+> ***** The V Sign triggers **YouTube Play/Pause** only when the active browser window and page satisfy the application's YouTube-specific condition.
+
+---
+
+## 🔀 Context-Aware Gesture Behavior
+
+The same physical gesture can produce different actions depending on the active application.
+
+### Example 1 — Next Gesture
+
+```text
+👉 Next Gesture
+       │
+       ├── Browser Mode
+       │      └── Next Browser Tab
+       │
+       └── Presentation Mode
+              └── Next PowerPoint Slide
+```
+
+### Example 2 — OK Sign
+
+```text
+👌 OK Sign
+      │
+      ├── Browser Mode
+      │      └── Open New Tab
+      │
+      └── Presentation Mode
+             └── Start Slideshow
+```
+
+### Example 3 — Open Palm
+
+```text
+✋ Open Palm
+      │
+      ├── Browser Mode
+      │      └── Close Current Tab
+      │
+      └── Presentation Mode
+             └── End Slideshow
+```
+
+This context-aware design allows the system to provide more functionality without requiring a large number of different gestures.
+
+---
+
+## 🖱️ Continuous Mouse Gestures
+
+In addition to the static gestures shown above, the application uses rule-based hand interactions for continuous mouse control.
+
+| Hand Interaction           | Action           |
+| -------------------------- | ---------------- |
+| **Index + Middle Fingers** | Move Cursor      |
+| **Index Finger + Thumb**   | Left Click       |
+| **Middle Finger + Thumb**  | Right Click      |
+| **Index + Thumb Tap**      | Double Click     |
+| **Index + Thumb Hold**     | Select / Drag    |
+| **Scroll Gesture**         | Scroll Up / Down |
+
+These interactions are handled by the **rule-based controller** because mouse operations require continuous, low-latency responses.
+
+---
+
+## 🧠 Gesture Recognition Categories
+
+The gestures are processed using two complementary mechanisms:
+
+### Rule-Based Gestures
+
+Used for continuous interactions:
+
+```text
+Cursor Movement
+     ↓
+Left Click
+     ↓
+Right Click
+     ↓
+Double Click
+     ↓
+Drag / Select
+     ↓
+Scrolling
+```
+
+### Static ML Gestures
+
+Used for intentional commands:
+
+```text
+Thumbs Up       → Copy
+Thumbs Down     → Paste
+V Sign          → Cut
+Fist            → Delete
+Wrapped Thumb   → Mute
+Next            → Context-specific Navigation
+Previous        → Context-specific Navigation
+OK Sign         → Context-specific Action
+Open Palm       → Context-specific Action
+```
+
+The ML-based gestures require a stable pose before an action is triggered, while continuous mouse interactions are handled directly by the rule-based controller.
 
 ---
 
