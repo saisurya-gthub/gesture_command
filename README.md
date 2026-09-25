@@ -103,6 +103,8 @@ For example:
 
 * **👉 Next gesture** → Next slide
 * **👈 Previous gesture** → Previous slide
+* **👌 Ok gesture** → Open slideshow
+* **✋ Close gesture** → Close slideshow
 
 This allows presentations to be controlled without physically using the keyboard or mouse.
 
@@ -138,7 +140,8 @@ For example:
 | ✌️ V Sign         | Cut         | Cut / YouTube Play-Pause* | Cut             |
 | 👉 Next           | —           | Next Tab                  | Next Slide      |
 | 👈 Previous       | —           | Previous Tab              | Previous Slide  |
-| 👊 Fist           | Delete      | Delete                    | Delete          |
+| 👌 Ok sign        | —           | open a new Tab            | open slideshow  |
+| ✋ open palm      | —           | closes Tab                | close slideshow |
 
 *The YouTube action is performed only when the active browser/page satisfies the application's browser-specific condition.
 
