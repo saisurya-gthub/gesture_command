@@ -13,6 +13,11 @@
 
 - [Overview](#overview)
 - [Key Features](#key-features)
+- [Gesture Reference](#gesture-reference)
+  - [Gesture-to-Action Matrix](#gesture-to-action-matrix)
+  - [Context-Aware Gesture Behavior](#context-aware-gesture-behavior)
+  - [Continuous Mouse Gestures](#continuous-mouse-gestures)
+  - [Gesture Recognition Categories](#gesture-recognition-categories)
 - [How It Works](#how-it-works)
 - [Gesture Controls](#gesture-controls)
   - [Continuous Controls](#continuous-controls)
