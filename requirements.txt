@@ -1,0 +1,9 @@
+opencv-python
+mediapipe==0.10.33
+numpy
+pandas
+scikit-learn
+joblib
+pyautogui
+pygetwindow
+pywinauto
