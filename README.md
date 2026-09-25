@@ -44,7 +44,7 @@
 
 ---
 
-# 🧠 Overview
+# Overview
 
 **Gesture Based System Control** is a computer-vision application that enables users to interact with a Windows computer using hand gestures captured through a webcam.
 
@@ -69,7 +69,7 @@ The project follows a simple philosophy:
 
 ---
 
-# ✨ Key Features
+# Key Features
 
 ### 🖐️ Real-Time Hand Tracking
 
@@ -122,7 +122,7 @@ PowerPoint   → Next Slide
 
 ---
 
-# 🎯 Gesture Reference
+# Gesture Reference
 
 The application uses a compact set of hand gestures to control different computer operations.
 
@@ -146,7 +146,7 @@ A gesture can have a **different meaning depending on the active application**. 
 
 ---
 
-## 🔀 Context-Aware Gesture Behavior
+## Context-Aware Gesture Behavior
 
 The same physical gesture can produce different actions depending on the active application.
 
@@ -190,7 +190,7 @@ This context-aware design allows the system to provide more functionality withou
 
 ---
 
-## 🖱️ Continuous Mouse Gestures
+## Continuous Mouse Gestures
 
 In addition to the static gestures shown above, the application uses rule-based hand interactions for continuous mouse control.
 
@@ -207,7 +207,7 @@ These interactions are handled by the **rule-based controller** because mouse op
 
 ---
 
-## 🧠 Gesture Recognition Categories
+## Gesture Recognition Categories
 
 The gestures are processed using two complementary mechanisms:
 
@@ -249,7 +249,7 @@ The ML-based gestures require a stable pose before an action is triggered, while
 
 ---
 
-# ⚙️ How It Works
+# How It Works
 
 The application processes the user's hand input through the following pipeline:
 
@@ -298,7 +298,7 @@ Feature Processing
 
 ---
 
-# 🖐️ Gesture Controls
+# Gesture Controls
 
 The application divides gesture interaction into two categories.
 
@@ -335,7 +335,7 @@ The exact interpretation of some gestures can change according to the active app
 
 ---
 
-# 🎛️ Application Modes
+# Application Modes
 
 The system automatically determines the control mode based on the currently active application.
 
@@ -397,7 +397,7 @@ This allows basic presentation navigation without directly interacting with the 
 
 ---
 
-# 🔄 Gesture-to-Action Mapping
+# Gesture-to-Action Mapping
 
 The important design feature is that a recognized gesture is **not necessarily tied to one fixed action**.
 
@@ -429,7 +429,7 @@ This separation makes the application easier to extend because new actions or ap
 
 ---
 
-# 🏗️ System Architecture
+# System Architecture
 
 ```text
                        ┌──────────────┐
@@ -478,7 +478,7 @@ This separation makes the application easier to extend because new actions or ap
 
 ---
 
-# 🧩 Why Rule-Based + Machine Learning?
+# Why Rule-Based + Machine Learning?
 
 The project intentionally combines both approaches because continuous and static interactions have different requirements.
 
@@ -507,7 +507,7 @@ The combination provides a wider range of controls without requiring a separate 
 
 ---
 
-# 🛠️ Technology Stack
+# Technology Stack
 
 | Technology          | Role                                          |
 | ------------------- | --------------------------------------------- |
@@ -524,7 +524,7 @@ The combination provides a wider range of controls without requiring a separate 
 
 ---
 
-# 📁 Project Structure
+# Project Structure
 
 ```text
 gesture_command/
@@ -587,7 +587,7 @@ Used to collect gesture samples for dataset creation.
 
 ---
 
-# 💻 Requirements
+# Requirements
 
 Before installing the project, make sure the system has:
 
@@ -606,7 +606,7 @@ git --version
 
 ---
 
-# 🚀 Installation & Setup
+# Installation & Setup
 
 ## 1. Clone the Repository
 
@@ -675,7 +675,7 @@ pip install -r requirements.txt
 
 ---
 
-# ⚡ Quick Start
+# Quick Start
 
 Once the dependencies are installed, the application can be started directly.
 
@@ -704,7 +704,7 @@ The trained gesture model and MediaPipe hand-landmarker file are already include
 
 ---
 
-# 🎮 Using the Application
+# Using the Application
 
 After starting the application:
 
@@ -757,7 +757,7 @@ Presentation Mode
 
 ---
 
-# 🛡️ Safety & Reliability Mechanisms
+# Safety & Reliability Mechanisms
 
 Because computer-control applications can accidentally trigger unwanted actions, the system includes several mechanisms to improve reliability.
 
@@ -797,7 +797,7 @@ Application-specific commands are executed only when the appropriate active appl
 
 ---
 
-# 🎯 Design Principle
+# Design Principle
 
 The central design principle of the project is:
 
@@ -835,7 +835,7 @@ The gesture itself remains the same while its meaning changes according to conte
 
 ---
 
-# ⚠️ Limitations
+# Limitations
 
 The current implementation has some practical limitations:
 
@@ -849,7 +849,7 @@ The current implementation has some practical limitations:
 
 ---
 
-# 🔮 Future Scope
+# Future Scope
 
 Potential areas for further development include:
 
@@ -863,7 +863,7 @@ Potential areas for further development include:
 
 ---
 
-# 🤝 Contributing
+# Contributing
 
 Contributions are welcome.
 
@@ -887,7 +887,7 @@ When contributing, please keep the project structure modular and test gesture ch
 
 ---
 
-# 📄 License
+# License
 
 This project is intended for educational and development purposes.
 
